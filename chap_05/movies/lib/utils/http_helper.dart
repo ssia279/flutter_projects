@@ -10,10 +10,24 @@ class HttpHelper {
   final String urlBase = 'https://api.themoviedb.org/3/movie';
   final String urlUpcoming = '/upcoming?';
   final String urlLanguage = '&language=en-US';
+  final String urlSearchBase = 'https://api.themoviedb.org/3/search/movie?api_key=acec125ded280ab40fec5f9549e73258&query=';
 
   Future<List?> getUpcoming() async {
     final String upcoming = urlBase + urlUpcoming + urlKey + urlLanguage;
     http.Response result = await http.get(Uri.parse(upcoming));
+    if (result.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(result.body);
+      final moviesMap = jsonResponse['results'];
+      List movies = moviesMap.map((movie) => Movie.fromJson(movie)).toList();
+      return movies;
+    } else {
+      return null;
+    }
+  }
+
+  Future<List?> findMovies(String title) async {
+    final String query = urlSearchBase + title;
+    http.Response result = await http.get(Uri.parse(query));
     if (result.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(result.body);
       final moviesMap = jsonResponse['results'];
