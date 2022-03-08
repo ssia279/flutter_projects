@@ -1,3 +1,5 @@
+import 'package:event_v2/services/authentication.dart';
+import 'package:event_v2/views/event_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,7 +17,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _message;
   final TextEditingController txtEmail = TextEditingController();
   final TextEditingController txtPassword = TextEditingController();
+  Authentication? auth;
 
+  @override
+  void initState() {
+    auth = Authentication();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,6 +112,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> submit() async{
-    
+    setState(() {
+      _message = "";
+    });
+    try {
+      if (_isLogin) {
+        _userId = await auth?.login(txtEmail.text, txtPassword.text);
+        print('Login for user $_userId');
+      } else {
+        _userId = await auth?.signUp(txtEmail.text, txtPassword.text);
+        print('Sign up for user $_userId');
+      }
+      if (_userId != null) {
+        Navigator.push(context, MaterialPageRoute(
+            builder: (context) => EventScreen(_userId!)
+        )
+        );
+      }
+    }catch (e){
+      print('Error: $e');
+      _message = e.toString();
+    }
   }
 }
