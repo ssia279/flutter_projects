@@ -49,8 +49,8 @@ class TodoBloc {
     });
   }
 
-  void _addTodo(Todo todo) {
-    db?.insertTodo(todo).then((result) {
+  Future<void> _addTodo(Todo todo) async{
+    await db?.insertTodo(todo).then((result) {
       getTodos();
     });
   }
